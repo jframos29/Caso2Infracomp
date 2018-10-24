@@ -54,24 +54,24 @@ public class Cliente {
 
 	public Cliente(){
 		try{
-			
-			System.out.println("---Integrantes: Juan Diego Gonzalez 201531418, Carlos Peñaloza 201531973, Camilo Montenegro 201531747");
+			System.out.println("----------------Caso 2 - Infraestructura Computacional----------------");
+			System.out.println("Integrantes:\nSergio Cárdenas 201613444, Juan Felipe Ramos 2016xxxxx, Maria Alejandra Abril 201xxxxxx");
 			sc = new Scanner(System.in);
 			seguridad = new Seguridad();
 
 			System.out.println("Ingrese el puerto al que se quiere conectar:\n ");
 			int puerto = sc.nextInt();
-			System.out.println("Escriba los algoritmos, separando con comas, que va a utilizar. Esta es la lista de los algorï¿½tmos:\n ");
+			System.out.println("Listado de algoritmos disponible:\n ");
 
-			System.out.println("\nAlgoritmos Simï¿½tricos:\n ");
+			System.out.println("Algoritmos Simétricos:");
 			for(int i = 0 ; i< ALGS_SIMETRICOS.length; i++){
 				System.out.println(ALGS_SIMETRICOS[i]);
 			}
-			System.out.println("\nAlgoritmos Asimï¿½tricos\n");
+			System.out.println("\nAlgoritmos Asimétricos");
 			for(int i = 0 ; i< ALGS_ASIMETRICOS.length; i++){
 				System.out.println(ALGS_ASIMETRICOS[i]);
 			}
-			System.out.println("\nAlgoritmos de Hash\n");
+			System.out.println("\nAlgoritmos de Hash");
 			for(int i = 0; i<ALGS_HMAC.length;i++){
 				System.out.println(ALGS_HMAC[i]);
 			}
@@ -101,6 +101,19 @@ public class Cliente {
 
 
 	}
+	
+	public static String convertByteArrayHexa(byte[] byteArray) {
+		String out = "";
+		for (int i = 0; i < byteArray.length; i++) {
+			if ((byteArray[i] & 0xff) <= 0xf) {
+				out += "0";
+			}
+			out += Integer.toHexString(byteArray[i] & 0xff).toUpperCase();
+		}
+
+		return out;
+	}
+
 
 	public void  procesar() throws Exception{
  		boolean termino = false;
@@ -133,46 +146,43 @@ public class Cliente {
 						writer.println(respuesta);
 						estado=1;
 						responde=false;
-
 					}
 					break;
 				case 1:
-					if(comando.equals(OK)) {
-						System.out.println("Se intercambiarÃ¡ el Certificado Digital");
+					if(comando.equals(OK) && !responde) {
+						System.out.println("Se intercambiará el Certificado Digital");
 						seguridad.setLlaveAsimetrica();
 						java.security.cert.X509Certificate certi = seguridad.crearCertificado();
-						String finCertificado = "\n-----END CERTIFICATE-----";
-						String inicioCertificado = "-----BEGIN CERTIFICATE-----\n";
 						byte[] bytesCertiPem = certi.getEncoded();
-						String certiString = new String(Base64.encode(bytesCertiPem));
-						String certiFinal = "CERTCLNT:"+inicioCertificado + certiString + finCertificado;
+						String certiString = new String(convertByteArrayHexa(bytesCertiPem));
+						String certiFinal = certiString;
 						writer.println(certiFinal);
 
 						responde = true;
-					}else {
-						if(responde && comando.contains("END CERTIFICATE")) {
-							System.out.println("Se recibiÃ³ el Certificado Digital del Servidor");
-							certificado = certificado.replace(CERTSRV, "");
-							System.out.println(certificado);
-							PrintWriter pw = new PrintWriter(new FileOutputStream("data/cert.txt"));
-							pw.println(certificado);
-							pw.close();
-							System.out.println("Procesando...");
-							reto = Math.abs(rand.nextLong());
-							CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-							X509Certificate certiServi = (X509Certificate) certFactory.generateCertificate(new FileInputStream("./data/cert.txt"));
-							seguridad.setCertificado(certiServi);
-							cifra = seguridad.cifrarAsimetrica(""+reto);
-							cifra = Hex.encode(cifra);
-							
-							writer.println(OK);
-							Thread.sleep(500);
-							writer.println(new String(cifra));
-
-							estado = 2;
-							responde=false;
-						}
 					}
+					else if(responde && !comando.equals(OK)) {
+						System.out.println("Se recibió el Certificado Digital del Servidor");
+						certificado = certificado.replace(CERTSRV, "");
+						System.out.println(certificado);
+						PrintWriter pw = new PrintWriter(new FileOutputStream("data/cert.txt"));
+						pw.print(comando);
+						pw.close();
+						System.out.println("Procesando...");
+						reto = Math.abs(rand.nextLong());
+						CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+						X509Certificate certiServi = (X509Certificate) certFactory.generateCertificate(new FileInputStream("data/cert.txt"));
+						seguridad.setCertificado(certiServi);
+						cifra = seguridad.cifrarAsimetrica(""+reto);
+						cifra = Hex.encode(cifra);
+						
+						writer.println(OK);
+						Thread.sleep(500);
+						writer.println(new String(cifra));
+
+						estado = 2;
+						responde=false;
+					}
+					
 					break;
 				case 2:
 					if(!responde){
@@ -243,9 +253,7 @@ public class Cliente {
 
 	}
 
-
-
-
-
-
+	public static void main(String[] args) {
+		new Cliente();
+	}
 }

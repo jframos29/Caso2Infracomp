@@ -167,7 +167,7 @@ public class Seguridad {
 		certGen.setNotAfter(fechaFin);
 		certGen.setSubjectDN(dn);                       
 		certGen.setPublicKey(pair.getPublic());
-		certGen.setSignatureAlgorithm("SHA1WITHRSA");
+		certGen.setSignatureAlgorithm("SHA1withRSA");
 
 		return certGen.generate(pair.getPrivate());
 	}
