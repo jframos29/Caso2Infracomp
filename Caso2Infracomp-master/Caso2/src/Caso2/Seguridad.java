@@ -106,7 +106,7 @@ public class Seguridad {
 	public byte[] cifrarSimetrica(byte[] arg) throws Exception{
 		String PADDING = "";
 		String res = "";
-		if(algSimetrico.equals(Cliente.ALGS_SIMETRICOS[0])|| algAsimetrico.equals(Cliente.ALGS_SIMETRICOS[1])){
+		if(algSimetrico.equals(Cliente.ALGS_SIMETRICOS[0])){
 			res = "/ECB/PKCS5Padding";
 		}
 		PADDING = algSimetrico + res;

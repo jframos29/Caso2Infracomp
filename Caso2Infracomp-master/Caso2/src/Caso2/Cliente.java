@@ -2,9 +2,11 @@ package Caso2;
 
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -29,13 +31,11 @@ public class Cliente {
 	public static final String OK = "OK";
 	public static final String AlGORITMOS = "ALGORITMOS";
 	public static final String ERROR = "ERROR";
-	public static final String CERTSRV = "CERTSRV:";
-	public static final String CERTCLNT = "CERTCLNT";
 	public static final String SEPARADOR = ":";
 
 
 
-	public static final String[] ALGS_SIMETRICOS = {"DES","AES","Blowfish", "RC4"};
+	public static final String[] ALGS_SIMETRICOS = {"AES","Blowfish"};
 	public static final String[] ALGS_ASIMETRICOS = {"RSA"};
 	public static final String[] ALGS_HMAC = {"HMACMD5","HMACSHA1","HMACSHA256"};
 
@@ -61,7 +61,7 @@ public class Cliente {
 
 			System.out.println("Ingrese el puerto al que se quiere conectar:\n ");
 			int puerto = sc.nextInt();
-			System.out.println("Listado de algoritmos disponible:\n ");
+			System.out.println("\nListado de algoritmos disponibles:\n ");
 
 			System.out.println("Algoritmos Simétricos:");
 			for(int i = 0 ; i< ALGS_SIMETRICOS.length; i++){
@@ -122,9 +122,7 @@ public class Cliente {
 		String respuesta = "";
 		long reto = 0;
 		String comando = "";
-		String certificado = "";
 		boolean responde = false;
-		Random rand = new Random();
 		byte[]cifra;
 
 		writer.println(HOLA);
@@ -132,10 +130,10 @@ public class Cliente {
 			if(reader.ready()){
 				esperando = true;
 				comando = reader.readLine();
-				if(comando == null || comando.equals(""))continue;
+				if(comando == null || comando.equals(""))
+					continue;
 				else if(comando.toLowerCase().contains(ERROR.toLowerCase())) throw new Exception(comando);
-				else if(estado ==1 && responde) certificado +=comando+"\n";
-				else System.out.println("Servidor: " + comando);
+				else if(comando.toLowerCase().contains(OK.toLowerCase())) System.out.println("Servidor: " + comando);
 
 				switch(estado){
 				case 0:
@@ -145,58 +143,54 @@ public class Cliente {
 						respuesta+= seguridad.darAlgos();
 						writer.println(respuesta);
 						estado=1;
-						responde=false;
 					}
 					break;
 				case 1:
-					if(comando.equals(OK) && !responde) {
+					if(comando.equals(OK)) {
 						System.out.println("Se intercambiará el Certificado Digital");
 						seguridad.setLlaveAsimetrica();
 						java.security.cert.X509Certificate certi = seguridad.crearCertificado();
 						byte[] bytesCertiPem = certi.getEncoded();
-						String certiString = new String(convertByteArrayHexa(bytesCertiPem));
+						String certiString = new String(Hex.toHexString(bytesCertiPem));
 						String certiFinal = certiString;
 						writer.println(certiFinal);
-
-						responde = true;
-					}
-					else if(responde && !comando.equals(OK)) {
-						System.out.println("Se recibió el Certificado Digital del Servidor");
-						certificado = certificado.replace(CERTSRV, "");
-						System.out.println(certificado);
-						PrintWriter pw = new PrintWriter(new FileOutputStream("data/cert.txt"));
-						pw.print(comando);
-						pw.close();
-						System.out.println("Procesando...");
-						reto = Math.abs(rand.nextLong());
-						CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-						X509Certificate certiServi = (X509Certificate) certFactory.generateCertificate(new FileInputStream("data/cert.txt"));
-						seguridad.setCertificado(certiServi);
-						cifra = seguridad.cifrarAsimetrica(""+reto);
-						cifra = Hex.encode(cifra);
 						
-						writer.println(OK);
-						Thread.sleep(500);
-						writer.println(new String(cifra));
-
 						estado = 2;
-						responde=false;
 					}
-					
 					break;
 				case 2:
-					if(!responde){
-
-						cifra = Hex.decode(comando);
-						String valor = new String(cifra);
-						if(valor.equals(""+reto))writer.println(OK);
-						else throw new Exception("El reto recibido del servidor no coincide con el enviado");
+					if(!comando.equals(OK)) {
+						System.out.println("Se recibió el Certificado Digital del Servidor");
+						System.out.println(comando);
+						System.out.println("Procesando certificado...");
+						CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+						InputStream in = new ByteArrayInputStream(Hex.decode(comando));
+						X509Certificate certiServi = (X509Certificate) certFactory.generateCertificate(in);
+						seguridad.setCertificado(certiServi);
+						
+						writer.println(OK);
 
 						estado = 3;
-						responde=false;
 					}
 					break;
 				case 3:
+					cifra = Hex.decode(comando);
+					String valor = seguridad.decifrarAsimetricamente(cifra);
+					System.out.println("Llave secreta: "+valor);
+					seguridad.setLlaveSimetrica(cifra);
+					cifra = seguridad.cifrarAsimetrica(valor);
+					cifra = Hex.encode(cifra);
+					writer.println(new String(cifra));
+					
+					estado = 4;
+					
+					break;
+				case 4:
+					if(comando.equals(OK)) {
+						
+					}
+					
+					
 					if(!responde){
 						byte[] llave = Hex.decode(comando);
 						respuesta = seguridad.decifrarAsimetricamente(llave);
@@ -211,11 +205,11 @@ public class Cliente {
 						respuesta = Hex.toHexString(cifra);
 						writer.println(send);
 
-						estado = 4;
+						estado = 5;
 						responde = false;
 					}	
 					break;
-				case 4:
+				case 5:
 					comando = seguridad.decifrarSimetricamente(Hex.decode(comando));
 					if(!responde&&comando.equals(OK)){
 						System.out.println("Consultando...");
@@ -225,13 +219,13 @@ public class Cliente {
 						respuesta = new String(Hex.encode(cifra));
 						respuesta += ":"+new String(Hex.encode(seguridad.cifrarSimetrica(seguridad.getLlaveDigest(cedula.getBytes()))));
 						writer.println(respuesta);
-						estado = 5;
+						estado = 6;
 						responde = false;
 					}
 					else if (comando.equals(ERROR))
 						throw new Exception ("Ocurrio un error en el servidor");
 					break;
-				case 5:
+				case 6:
 					comando = seguridad.decifrarSimetricamente(Hex.decode(comando));
 					if(!responde&&comando.equals(OK)) {
 						termino = true;
