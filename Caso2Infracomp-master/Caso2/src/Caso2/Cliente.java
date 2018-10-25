@@ -120,7 +120,6 @@ public class Cliente {
 		boolean esperando = true;
 		int estado = 0;
 		String respuesta = "";
-		long reto = 0;
 		String comando = "";
 		boolean responde = false;
 		byte[]cifra;
@@ -132,7 +131,7 @@ public class Cliente {
 				comando = reader.readLine();
 				if(comando == null || comando.equals(""))
 					continue;
-				else if(comando.toLowerCase().contains(ERROR.toLowerCase())) throw new Exception(comando);
+				else if(comando.toLowerCase().contains(ERROR.toLowerCase()) && estado != 5) throw new Exception(comando);
 				else if(comando.toLowerCase().contains(OK.toLowerCase())) System.out.println("Servidor: " + comando);
 
 				switch(estado){
@@ -187,9 +186,14 @@ public class Cliente {
 					break;
 				case 4:
 					if(comando.equals(OK)) {
-						System.out.println("Ingrese identificador de acceso");
-						String id = sc.next();
-						cifra = seguridad.cifrarSimetrica(id.getBytes());
+						System.out.println("Ingrese su identificador de acceso");
+						String id = sc.nextInt()+"";
+						cifra = seguridad.cifrarSimetrica((id).getBytes());
+						cifra = Hex.encode(cifra);
+						writer.println(cifra);
+						
+						cifra = seguridad.getLlaveDigest((id.getBytes()));
+						cifra = seguridad.cifrarSimetrica(cifra);
 						cifra = Hex.encode(cifra);
 						writer.println(cifra);
 						
@@ -199,6 +203,11 @@ public class Cliente {
 					break;
 					
 				case 5:
+					if(comando.contains(OK)) {
+						System.out.println("Servidor: "+comando.split(":")[1]);
+					}
+					else
+						System.out.println("Hubo un error al realizar la consulta: "+comando);
 					if(!responde){
 						byte[] llave = Hex.decode(comando);
 						respuesta = seguridad.decifrarAsimetricamente(llave);

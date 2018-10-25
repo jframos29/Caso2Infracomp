@@ -107,6 +107,7 @@ public class Seguridad {
 		String PADDING = "";
 		String res = "";
 		if(algSimetrico.equals(Cliente.ALGS_SIMETRICOS[0])){
+			System.out.println("Algoritmo: "+Cliente.ALGS_SIMETRICOS[0]);
 			res = "/ECB/PKCS5Padding";
 		}
 		PADDING = algSimetrico + res;
