@@ -187,10 +187,18 @@ public class Cliente {
 					break;
 				case 4:
 					if(comando.equals(OK)) {
+						System.out.println("Ingrese identificador de acceso");
+						String id = sc.next();
+						cifra = seguridad.cifrarSimetrica(id.getBytes());
+						cifra = Hex.encode(cifra);
+						writer.println(cifra);
 						
+						estado = 5;
 					}
 					
+					break;
 					
+				case 5:
 					if(!responde){
 						byte[] llave = Hex.decode(comando);
 						respuesta = seguridad.decifrarAsimetricamente(llave);
@@ -208,8 +216,6 @@ public class Cliente {
 						estado = 5;
 						responde = false;
 					}	
-					break;
-				case 5:
 					comando = seguridad.decifrarSimetricamente(Hex.decode(comando));
 					if(!responde&&comando.equals(OK)){
 						System.out.println("Consultando...");
