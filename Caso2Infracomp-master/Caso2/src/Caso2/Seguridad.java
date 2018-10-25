@@ -1,21 +1,15 @@
 package Caso2;
 
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.SignatureException;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Random;
 
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.x500.X500Principal;
@@ -93,6 +87,7 @@ public class Seguridad {
 	
 	
 	public void setLlaveSimetrica(byte[] valor)throws Exception{
+		System.out.println(valor.length);
 		llave = new SecretKeySpec(valor, algSimetrico);
 	}
 	
@@ -133,7 +128,7 @@ public class Seguridad {
 	public String decifrarSimetricamente(byte[] arg) throws Exception{
 		String PADDING = "";
 		String res = "";
-		if(algSimetrico.equals(Cliente.ALGS_SIMETRICOS[0])|| algAsimetrico.equals(Cliente.ALGS_SIMETRICOS[1])){
+		if(algSimetrico.equals(Cliente.ALGS_SIMETRICOS[0])){
 			res = "/ECB/PKCS5Padding";
 		}
 		PADDING = algSimetrico + res;

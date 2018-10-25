@@ -3,8 +3,6 @@ package Caso2;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,14 +10,9 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import java.security.cert.CertificateFactory;
-import java.util.Random;
 import java.util.Scanner;
 
-import javax.xml.bind.DatatypeConverter;
-
 import java.security.cert.X509Certificate;
-
-import org.bouncycastle.util.encoders.Base64;
 
 import org.bouncycastle.util.encoders.Hex;
 
@@ -208,37 +201,37 @@ public class Cliente {
 					}
 					else
 						System.out.println("Hubo un error al realizar la consulta: "+comando);
-					if(!responde){
-						byte[] llave = Hex.decode(comando);
-						respuesta = seguridad.decifrarAsimetricamente(llave);
-						seguridad.setLlaveSimetrica(respuesta.getBytes());
-						System.out.println("Ingrese usuario");
-						String usuario = sc.next();
-						System.out.println("Ingrese clave");
-						String clave =sc.next();
-						String respuestaUs = usuario +","+clave;
-						cifra = seguridad.cifrarSimetrica(respuestaUs.getBytes());
-						String send = DatatypeConverter.printHexBinary(cifra);
-						respuesta = Hex.toHexString(cifra);
-						writer.println(send);
-
-						estado = 5;
-						responde = false;
-					}	
-					comando = seguridad.decifrarSimetricamente(Hex.decode(comando));
-					if(!responde&&comando.equals(OK)){
-						System.out.println("Consultando...");
-						System.out.print("Ingrese su número de cédula\n>");
-						String cedula = sc.next().trim();
-						cifra = seguridad.cifrarSimetrica(cedula.getBytes());
-						respuesta = new String(Hex.encode(cifra));
-						respuesta += ":"+new String(Hex.encode(seguridad.cifrarSimetrica(seguridad.getLlaveDigest(cedula.getBytes()))));
-						writer.println(respuesta);
-						estado = 6;
-						responde = false;
-					}
-					else if (comando.equals(ERROR))
-						throw new Exception ("Ocurrio un error en el servidor");
+//					if(!responde){
+//						byte[] llave = Hex.decode(comando);
+//						respuesta = seguridad.decifrarAsimetricamente(llave);
+//						seguridad.setLlaveSimetrica(respuesta.getBytes());
+//						System.out.println("Ingrese usuario");
+//						String usuario = sc.next();
+//						System.out.println("Ingrese clave");
+//						String clave =sc.next();
+//						String respuestaUs = usuario +","+clave;
+//						cifra = seguridad.cifrarSimetrica(respuestaUs.getBytes());
+//						String send = DatatypeConverter.printHexBinary(cifra);
+//						respuesta = Hex.toHexString(cifra);
+//						writer.println(send);
+//
+//						estado = 5;
+//						responde = false;
+//					}	
+//					comando = seguridad.decifrarSimetricamente(Hex.decode(comando));
+//					if(!responde&&comando.equals(OK)){
+//						System.out.println("Consultando...");
+//						System.out.print("Ingrese su número de cédula\n>");
+//						String cedula = sc.next().trim();
+//						cifra = seguridad.cifrarSimetrica(cedula.getBytes());
+//						respuesta = new String(Hex.encode(cifra));
+//						respuesta += ":"+new String(Hex.encode(seguridad.cifrarSimetrica(seguridad.getLlaveDigest(cedula.getBytes()))));
+//						writer.println(respuesta);
+//						estado = 6;
+//						responde = false;
+//					}
+//					else if (comando.equals(ERROR))
+//						throw new Exception ("Ocurrio un error en el servidor");
 					break;
 				case 6:
 					comando = seguridad.decifrarSimetricamente(Hex.decode(comando));
