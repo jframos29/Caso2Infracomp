@@ -169,7 +169,7 @@ public class Cliente {
 					cifra = Hex.decode(comando);
 					String valor = seguridad.decifrarAsimetricamente(cifra);
 					System.out.println("Llave secreta: "+valor);
-					seguridad.setLlaveSimetrica(cifra);
+					seguridad.setLlaveSimetrica(valor.getBytes());
 					cifra = seguridad.cifrarAsimetrica(valor);
 					cifra = Hex.encode(cifra);
 					writer.println(new String(cifra));
@@ -183,12 +183,12 @@ public class Cliente {
 						String id = sc.nextInt()+"";
 						cifra = seguridad.cifrarSimetrica((id).getBytes());
 						cifra = Hex.encode(cifra);
-						writer.println(cifra);
+						writer.println(new String(cifra));
 						
 						cifra = seguridad.getLlaveDigest((id.getBytes()));
 						cifra = seguridad.cifrarSimetrica(cifra);
 						cifra = Hex.encode(cifra);
-						writer.println(cifra);
+						writer.println(new String(cifra));
 						
 						estado = 5;
 					}
