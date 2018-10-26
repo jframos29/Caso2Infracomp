@@ -81,12 +81,8 @@ public class Seguridad {
 		Cipher cipher = Cipher.getInstance(algAsimetrico);
 		byte[] byts = arg.getBytes();
 		String txt = new String(byts);
-		System.out.println("la clave original es: "+ txt);
 		cipher.init(Cipher.ENCRYPT_MODE, certificado.getPublicKey());
-
 		byte[] bytsCifra = cipher.doFinal(byts);
-
-		System.out.println("clave Cifrada "+ bytsCifra);
 		return bytsCifra;	
 	}
 

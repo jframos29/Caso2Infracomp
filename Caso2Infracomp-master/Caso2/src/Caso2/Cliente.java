@@ -183,12 +183,11 @@ public class Cliente {
 						String id = sc.nextInt()+"";
 						buffer = seguridad.cifrarSimetrica(id.getBytes());
 						buffer = Hex.encode(buffer);
-						writer.println(buffer);
+						writer.println(new String(buffer));
 						
 						buffer = seguridad.getLlaveDigest((id.getBytes()));
-						buffer = seguridad.cifrarSimetrica(buffer);
 						buffer = Hex.encode(buffer);
-						writer.println(buffer);
+						writer.println(new String(buffer));
 						
 						estado = 5;
 					}
