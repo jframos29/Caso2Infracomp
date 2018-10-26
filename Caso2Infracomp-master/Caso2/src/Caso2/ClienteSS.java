@@ -12,12 +12,14 @@ import java.net.Socket;
 import java.security.cert.CertificateFactory;
 import java.util.Scanner;
 
+import javax.xml.bind.DatatypeConverter;
+
 import java.security.cert.X509Certificate;
 
 import org.bouncycastle.util.encoders.Hex;
 
 
-public class Cliente {
+public class ClienteSS {
 
 
 	public static final String HOLA = "HOLA";
@@ -45,7 +47,7 @@ public class Cliente {
 	private Seguridad seguridad;
 
 
-	public Cliente(){
+	public ClienteSS(){
 		try{
 			System.out.println("----------------Caso 2 - Infraestructura Computacional----------------");
 			System.out.println("Integrantes:\nSergio Cárdenas 201613444, Juan Felipe Ramos 201616932, Maria Alejandra Abril 201530720");
@@ -154,10 +156,6 @@ public class Cliente {
 						System.out.println("Se recibió el Certificado Digital del Servidor");
 						System.out.println(line);
 						System.out.println("Procesando certificado...");
-						CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-						InputStream in = new ByteArrayInputStream(Hex.decode(line));
-						X509Certificate certiServi = (X509Certificate) certFactory.generateCertificate(in);
-						seguridad.setCertificado(certiServi);
 						
 						writer.println(OK);
 
@@ -165,14 +163,9 @@ public class Cliente {
 					}
 					break;
 				case 3:
-					buffer = Hex.decode(line);
-					String valor = seguridad.decifrarAsimetrica(buffer);
-					seguridad.setLlaveSimetrica(valor.getBytes());
 					System.out.println("Llave secreta recibida");
 					System.out.println("Enviando llave secreta...");
-					buffer = seguridad.cifrarAsimetrica(valor);
-					buffer = Hex.encode(buffer);
-					writer.println(new String(buffer));
+					writer.println(line);
 					
 					estado = 4;
 					
@@ -181,14 +174,8 @@ public class Cliente {
 					if(line.equals(OK)) {
 						System.out.println("Ingrese su identificador de acceso:");
 						String id = sc.nextInt()+"";
-						buffer = seguridad.cifrarSimetrica(id.getBytes());
-						buffer = Hex.encode(buffer);
-						writer.println(buffer);
-						
-						buffer = seguridad.getLlaveDigest((id.getBytes()));
-						buffer = seguridad.cifrarSimetrica(buffer);
-						buffer = Hex.encode(buffer);
-						writer.println(buffer);
+						writer.println(id);
+						writer.println(id);
 						
 						estado = 5;
 					}
@@ -219,6 +206,6 @@ public class Cliente {
 	}
 
 	public static void main(String[] args) {
-		new Cliente();
+		new ClienteSS();
 	}
 }

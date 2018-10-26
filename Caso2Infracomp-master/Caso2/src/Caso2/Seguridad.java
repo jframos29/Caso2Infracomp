@@ -37,43 +37,9 @@ public class Seguridad {
 	
 	private X509Certificate certificado;
 	
-	public String getAlgSimetrico() {
-		return algSimetrico;
-	}
-	public void setAlgSimetrico(String algSimetrico) {
-		this.algSimetrico = algSimetrico;
-	}
-	public SecretKey getLlave() {
-		return llave;
-	}
-	public void setLlave(SecretKey llave) {
-		this.llave = llave;
-	}
-	public String getAlgAsimetrico() {
-		return algAsimetrico;
-	}
-	public void setAlgAsimetrico(String algAsimetrico) {
-		this.algAsimetrico = algAsimetrico;
-	}
-	public String getAlgHMAC() {
-		return AlgHMAC;
-	}
-	public void setAlgHMAC(String algHMAC) {
-		AlgHMAC = algHMAC;
-	}
-	public KeyPair getPair() {
-		return pair;
-	}
-	public void setPair(KeyPair pair) {
-		this.pair = pair;
-	}
-	public X509Certificate getCertificado() {
-		return certificado;
-	}
 	public void setCertificado(X509Certificate certificado) {
 		this.certificado = certificado;
 	}
-	
 
 	public String darAlgos(){
 		return ":"+algSimetrico+":"+algAsimetrico+":"+AlgHMAC;
@@ -102,7 +68,6 @@ public class Seguridad {
 		String PADDING = "";
 		String res = "";
 		if(algSimetrico.equals(Cliente.ALGS_SIMETRICOS[0])){
-			System.out.println("Algoritmo: "+Cliente.ALGS_SIMETRICOS[0]);
 			res = "/ECB/PKCS5Padding";
 		}
 		PADDING = algSimetrico + res;
@@ -125,7 +90,7 @@ public class Seguridad {
 		return bytsCifra;	
 	}
 
-	public String decifrarSimetricamente(byte[] arg) throws Exception{
+	public String decifrarSimetrica(byte[] arg) throws Exception{
 		String PADDING = "";
 		String res = "";
 		if(algSimetrico.equals(Cliente.ALGS_SIMETRICOS[0])){
@@ -140,7 +105,7 @@ public class Seguridad {
 	}
 	
 	
-	public String decifrarAsimetricamente(byte[] arg)throws Exception{
+	public String decifrarAsimetrica(byte[] arg)throws Exception{
 		Cipher ci = Cipher.getInstance(algAsimetrico);
 		ci.init(Cipher.DECRYPT_MODE, pair.getPrivate());
 		byte[] txtOriginal = ci.doFinal(arg);
