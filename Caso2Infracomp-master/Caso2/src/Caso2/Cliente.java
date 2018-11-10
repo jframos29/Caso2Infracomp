@@ -15,9 +15,10 @@ import java.util.Scanner;
 import java.security.cert.X509Certificate;
 
 import org.bouncycastle.util.encoders.Hex;
+import uniandes.gload.core.Task;
 
 
-public class Cliente {
+public class Cliente extends Task {
 
 
 	public static final String HOLA = "HOLA";
@@ -44,11 +45,18 @@ public class Cliente {
 
 	private Seguridad seguridad;
 
+	public static Long tiempoVerificacion = 0L;
+
+	public static Long tiempoRespuesta	= 0L;
+
+	public static int numPerdidas=0;
+
+	public static Long t1, t2, t3, t4;
 
 	public Cliente(){
 		try{
 			System.out.println("----------------Caso 2 - Infraestructura Computacional----------------");
-			System.out.println("Integrantes:\nSergio Cárdenas 201613444, Juan Felipe Ramos 201616932, Maria Alejandra Abril 201530720");
+			System.out.println("Integrantes:\nSergio Cï¿½rdenas 201613444, Juan Felipe Ramos 201616932, Maria Alejandra Abril 201530720");
 			sc = new Scanner(System.in);
 			seguridad = new Seguridad();
 
@@ -56,11 +64,11 @@ public class Cliente {
 			int puerto = sc.nextInt();
 			System.out.println("\nListado de algoritmos disponibles:\n ");
 
-			System.out.println("Algoritmos Simétricos:");
+			System.out.println("Algoritmos Simï¿½tricos:");
 			for(int i = 0 ; i< ALGS_SIMETRICOS.length; i++){
 				System.out.println(ALGS_SIMETRICOS[i]);
 			}
-			System.out.println("\nAlgoritmos Asimétricos");
+			System.out.println("\nAlgoritmos Asimï¿½tricos");
 			for(int i = 0 ; i< ALGS_ASIMETRICOS.length; i++){
 				System.out.println(ALGS_ASIMETRICOS[i]);
 			}
@@ -72,14 +80,18 @@ public class Cliente {
 			String algos = sc.next();
 			String[] algoritmos = algos.split(","); 
 			seguridad.SetAlgs(algoritmos);
-			socketCliente = new Socket("localhost",puerto);
+			socketCliente = new Socket("34.219.170.87",puerto);
 			socketCliente.setKeepAlive(true);
 			writer = new PrintWriter(socketCliente.getOutputStream(), true);
 			reader = new BufferedReader(new InputStreamReader(socketCliente.getInputStream()));			
 
 			procesar();
+			System.out.println("Tiempo verificaciÃ³n en millis: "+tiempoVerificacion);
+			System.out.println("Tiempo respuesta consulta en millis: "+tiempoRespuesta);
 		}
 		catch (Exception e) {
+			numPerdidas++;
+			System.out.println("Cantidad de perdidas actual: "+numPerdidas);
 			e.printStackTrace();
 		}
 		try {
@@ -138,7 +150,7 @@ public class Cliente {
 					break;
 				case 1:
 					if(line.equals(OK)) {
-						System.out.println("Se intercambiará el Certificado Digital");
+						System.out.println("Se intercambiarï¿½ el Certificado Digital");
 						seguridad.setLlaveAsimetrica();
 						java.security.cert.X509Certificate certi = seguridad.crearCertificado();
 						byte[] bytesCertiPem = certi.getEncoded();
@@ -151,7 +163,7 @@ public class Cliente {
 					break;
 				case 2:
 					if(!line.equals(OK)) {
-						System.out.println("Se recibió el Certificado Digital del Servidor");
+						System.out.println("Se recibiï¿½ el Certificado Digital del Servidor");
 						System.out.println(line);
 						System.out.println("Procesando certificado...");
 						CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
@@ -160,7 +172,7 @@ public class Cliente {
 						seguridad.setCertificado(certiServi);
 						
 						writer.println(OK);
-
+						t1 = System.currentTimeMillis();
 						estado = 3;
 					}
 					break;
@@ -179,12 +191,14 @@ public class Cliente {
 					break;
 				case 4:
 					if(line.equals(OK)) {
+						t2 = System.currentTimeMillis();
+						tiempoVerificacion= t2-t1;
 						System.out.println("Ingrese su identificador de acceso:");
 						String id = sc.nextInt()+"";
 						buffer = seguridad.cifrarSimetrica(id.getBytes());
 						buffer = Hex.encode(buffer);
 						writer.println(new String(buffer));
-						
+						t3=System.currentTimeMillis();
 						buffer = seguridad.getLlaveDigest((id.getBytes()));
 						buffer = Hex.encode(buffer);
 						writer.println(new String(buffer));
@@ -195,6 +209,8 @@ public class Cliente {
 					break;
 					
 				case 5:
+					t4=System.currentTimeMillis();
+					tiempoRespuesta=t4-t3;
 					if(line.contains(OK)) {
 						System.out.println("Estado: "+line.split(":")[1]);
 					}
@@ -215,6 +231,24 @@ public class Cliente {
 			}
 		}
 
+	}
+
+	@Override
+	public void fail() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void success() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void execute() {
+		// TODO Auto-generated method stub
+		Cliente c =new Cliente();
 	}
 
 	public static void main(String[] args) {
