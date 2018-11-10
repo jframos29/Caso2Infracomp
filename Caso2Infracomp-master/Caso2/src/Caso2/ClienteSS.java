@@ -94,6 +94,7 @@ public class ClienteSS extends Task {
 		}
 		catch (Exception e) {
 			numPerdidas++;
+
 			System.out.println("Cantidad de perdidas actual: "+numPerdidas);
 			e.printStackTrace();
 		}
@@ -186,7 +187,7 @@ public class ClienteSS extends Task {
 				case 4:
 					if(line.equals(OK)) {
 						t2 = System.currentTimeMillis();
-						tiempoVerificacion= t2-t1;
+						tiempoVerificacion+= t2-t1;
 						System.out.println("Ingrese su identificador de acceso:");
 						String id = sc.nextInt()+"";
 						writer.println(id);
@@ -199,7 +200,7 @@ public class ClienteSS extends Task {
 					
 				case 5:
 					t4=System.currentTimeMillis();
-					tiempoRespuesta=t4-t3;
+					tiempoRespuesta+=t4-t3;
 					if(line.contains(OK)) {
 						System.out.println("Estado: "+line.split(":")[1]);
 					}
