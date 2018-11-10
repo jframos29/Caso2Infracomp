@@ -21,8 +21,8 @@ public class GeneradorSS {
 
         escritor.println((ClienteSS.tiempoVerificacion.doubleValue()/((double)numTask - (double)ClienteSS.numPerdidas))+";"+
                 (ClienteSS.tiempoRespuesta.doubleValue()/((double)numTask- (double)ClienteSS.numPerdidas))+";"+
+                (ClienteSS.cpu.doubleValue()/((double)numTask- (double)ClienteSS.numPerdidas))+";"+
                 ((double)ClienteSS.numPerdidas/((double)numTask)+"\n"));
-
 
     }
 
@@ -38,6 +38,7 @@ public class GeneradorSS {
                 ClienteSS.tiempoVerificacion = 0L;
                 ClienteSS.tiempoRespuesta = 0L;
                 ClienteSS.numPerdidas = 0;
+                ClienteSS.cpu = 0L;
             }
             escritor.close();
 

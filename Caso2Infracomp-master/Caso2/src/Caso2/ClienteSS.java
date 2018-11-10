@@ -53,6 +53,8 @@ public class ClienteSS extends Task {
 
 	public static int numPerdidas=0;
 
+	public static Long cpu= 0L;
+
 	public static Long t1, t2, t3, t4;
 
 
@@ -206,6 +208,8 @@ public class ClienteSS extends Task {
 					}
 					else
 						System.out.println("Hubo un error al realizar la consulta: "+line);
+					line = reader.readLine();
+					cpu+=Long.parseLong(line);
 					termino = true;
 					
 				default: 
