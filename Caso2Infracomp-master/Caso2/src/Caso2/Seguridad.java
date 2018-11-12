@@ -53,7 +53,6 @@ public class Seguridad {
 	
 	
 	public void setLlaveSimetrica(byte[] valor)throws Exception{
-		System.out.println(valor.length);
 		llave = new SecretKeySpec(valor, algSimetrico);
 	}
 	
