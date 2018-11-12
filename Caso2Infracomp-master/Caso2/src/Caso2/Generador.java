@@ -12,40 +12,33 @@ public class Generador {
     private static PrintWriter escritor;
     public Generador() {
         Task cliente = new Cliente();
-        int numTask =80;
-        int gapBetween= 100;
+        int numTask =3;
+        int gapBetween= 5000;
         generador = new LoadGenerator("Cliente", numTask, cliente, gapBetween);
         generador.generate();
 
         escritor.println(Cliente.tiempoVerificacion.doubleValue()/((double)numTask - (double)Cliente.numPerdidas)+";"+
                 Cliente.tiempoRespuesta.doubleValue()/((double)numTask- (double)Cliente.numPerdidas)+";"+
+                (Cliente.cpu/((double)numTask- (double)Cliente.numPerdidas))+";"+
                 (double)Cliente.numPerdidas/((double)numTask)+"\n");
+        Cliente.tiempoVerificacion = 0L;
+        Cliente.tiempoRespuesta = 0L;
+        Cliente.numPerdidas = 0;
+        Cliente.cpu = 0;
 
 
     }
 
     public static void main(String[] args) {
         try {
-            escritor = new PrintWriter(new File("./data/pruebas80_100_2.csv"));
-
-            for(int i = 0; i< 10 ; i++) {
-                escritor.write((i+1)+";");
-                new Generador();
-
-                Long start = System.currentTimeMillis();
-                while((System.currentTimeMillis()-start)<5000);
-                Cliente.tiempoVerificacion = 0L;
-                Cliente.tiempoRespuesta = 0L;
-                Cliente.numPerdidas = 0;
-            }
+            escritor = new PrintWriter(new File("pruebas400_20_8_1.csv"));
+            new Generador();
             escritor.close();
 
         }catch (Exception e) {
             // TODO: handle exception
-
             e.printStackTrace();
         }
-
     }
 
 }

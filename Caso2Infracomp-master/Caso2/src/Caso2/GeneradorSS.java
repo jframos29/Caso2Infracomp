@@ -18,9 +18,6 @@ public class GeneradorSS {
         int gapBetween= 20;
         generador = new LoadGenerator("ClienteSS", numTask, clienteSS, gapBetween);
         generador.generate();
-        System.out.println(ClienteSS.tiempoVerificacion +","+
-        ClienteSS.tiempoRespuesta +","+
-        ClienteSS.numPerdidas +","+ ClienteSS.cpu);
         escritor.println((ClienteSS.tiempoVerificacion.doubleValue()/((double)numTask - (double)ClienteSS.numPerdidas))+";"+
                 (ClienteSS.tiempoRespuesta.doubleValue()/((double)numTask- (double)ClienteSS.numPerdidas))+";"+
                 (ClienteSS.cpu/((double)numTask- (double)ClienteSS.numPerdidas))+";"+
