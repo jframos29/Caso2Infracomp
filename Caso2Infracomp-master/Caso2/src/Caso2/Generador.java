@@ -12,11 +12,16 @@ public class Generador {
     private static PrintWriter escritor;
     public Generador() {
         Task cliente = new Cliente();
-        int numTask =3;
-        int gapBetween= 5000;
+        int numTask =400;
+        int gapBetween= 20;
         generador = new LoadGenerator("Cliente", numTask, cliente, gapBetween);
         generador.generate();
-
+        
+        System.out.println(Cliente.tiempoVerificacion.doubleValue()/((double)numTask - (double)Cliente.numPerdidas)+";"+
+                Cliente.tiempoRespuesta.doubleValue()/((double)numTask- (double)Cliente.numPerdidas)+";"+
+                (Cliente.cpu/((double)numTask- (double)Cliente.numPerdidas))+";"+
+                (double)Cliente.numPerdidas/((double)numTask)+"\n");
+        
         escritor.println(Cliente.tiempoVerificacion.doubleValue()/((double)numTask - (double)Cliente.numPerdidas)+";"+
                 Cliente.tiempoRespuesta.doubleValue()/((double)numTask- (double)Cliente.numPerdidas)+";"+
                 (Cliente.cpu/((double)numTask- (double)Cliente.numPerdidas))+";"+
@@ -26,12 +31,11 @@ public class Generador {
         Cliente.numPerdidas = 0;
         Cliente.cpu = 0;
 
-
     }
 
     public static void main(String[] args) {
         try {
-            escritor = new PrintWriter(new File("pruebas400_20_8_1.csv"));
+            escritor = new PrintWriter(new File("pruebas400_20_2_10.csv"));
             new Generador();
             escritor.close();
 

@@ -94,7 +94,7 @@ public class Cliente extends Task {
         } catch (Exception e) {
             numPerdidas++;
             //System.out.println("Cantidad de perdidas actual: "+numPerdidas);
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         try {
             reader.close();
