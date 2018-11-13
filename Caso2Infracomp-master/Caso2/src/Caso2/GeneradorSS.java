@@ -4,6 +4,7 @@ import uniandes.gload.core.LoadGenerator;
 import uniandes.gload.core.Task;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.PrintWriter;
 
 
@@ -14,8 +15,8 @@ public class GeneradorSS {
     private static PrintWriter escritor;
     public GeneradorSS() {
         Task clienteSS= new ClienteSS();
-        int numTask =400;
-        int gapBetween= 20;
+        int numTask =200;
+        int gapBetween= 40;
         generador = new LoadGenerator("ClienteSS", numTask, clienteSS, gapBetween);
         generador.generate();
         escritor.println((ClienteSS.tiempoVerificacion.doubleValue()/((double)numTask - (double)ClienteSS.numPerdidas))+";"+
@@ -31,8 +32,11 @@ public class GeneradorSS {
 
     public static void main(String[] args) {
         try{
-            escritor = new PrintWriter(new File("pruebasSS400_20_8_1.csv"));
-            new GeneradorSS();
+            escritor = new PrintWriter(new FileOutputStream(new File("./data/pruebasSS200_40_2.csv"), true));
+            for(int i = 0; i<1; i++) {
+            	new GeneradorSS();
+            	Thread.sleep(5000);
+            }
             escritor.close();
         }
         catch (Exception e) {

@@ -60,11 +60,11 @@ public class ClienteSS extends Task {
 
     public ClienteSS() {
         try {
-            System.out.println("----------------Caso 2 - Infraestructura Computacional----------------");
-            System.out.println("Integrantes:\nSergio C�rdenas 201613444, Juan Felipe Ramos 201616932, Maria Alejandra Abril 201530720");
-            sc = new Scanner(System.in);
+            //System.out.println("----------------Caso 2 - Infraestructura Computacional----------------");
+            //System.out.println("Integrantes:\nSergio C�rdenas 201613444, Juan Felipe Ramos 201616932, Maria Alejandra Abril 201530720");
+            //sc = new Scanner(System.in);
             seguridad = new Seguridad();
-            System.out.println("Ingrese el puerto al que se quiere conectar:\n ");
+            //System.out.println("Ingrese el puerto al que se quiere conectar:\n ");
             //int puerto = sc.nextInt();
             int puerto = 10234;
             //System.out.println("\nListado de algoritmos disponibles:\n ");
@@ -135,12 +135,12 @@ public class ClienteSS extends Task {
                 if (line == null || line.equals(""))
                     continue;
                 else if (line.toLowerCase().contains(ERROR.toLowerCase()) && estado != 5) throw new Exception(line);
-                else if (line.toLowerCase().contains(OK.toLowerCase())) System.out.println("Servidor: " + line);
+                //else if (line.toLowerCase().contains(OK.toLowerCase())) System.out.println("Servidor: " + line);
 
                 switch (estado) {
                     case 0:
                         if (line.equals(OK)) {
-                            System.out.println("INICIANDO");
+                            //System.out.println("INICIANDO");
                             respuesta = AlGORITMOS;
                             respuesta += seguridad.darAlgos();
                             writer.println(respuesta);
@@ -149,7 +149,7 @@ public class ClienteSS extends Task {
                         break;
                     case 1:
                         if (line.equals(OK)) {
-                            System.out.println("Se intercambiar� el Certificado Digital");
+                            //System.out.println("Se intercambiar� el Certificado Digital");
                             seguridad.setLlaveAsimetrica();
                             java.security.cert.X509Certificate certi = seguridad.crearCertificado();
                             byte[] bytesCertiPem = certi.getEncoded();
@@ -161,17 +161,17 @@ public class ClienteSS extends Task {
                         break;
                     case 2:
                         if (!line.equals(OK)) {
-                            System.out.println("Se recibi� el Certificado Digital del Servidor");
+                            //System.out.println("Se recibi� el Certificado Digital del Servidor");
                             //System.out.println(line);
-                            System.out.println("Procesando certificado...");
+                            //System.out.println("Procesando certificado...");
                             writer.println(OK);
                             t1 = System.currentTimeMillis();
                             estado = 3;
                         }
                         break;
                     case 3:
-                        System.out.println("Llave secreta recibida");
-                        System.out.println("Enviando llave secreta...");
+                        //System.out.println("Llave secreta recibida");
+                        //System.out.println("Enviando llave secreta...");
                         writer.println(line);
                         estado = 4;
 
@@ -195,10 +195,10 @@ public class ClienteSS extends Task {
                         t4 = System.currentTimeMillis();
                         tiempoRespuesta += t4 - t3;
                         if (line.contains(OK)) {
-                            System.out.println("Estado: "+line.split(":")[1]);
+                            //System.out.println("Estado: "+line.split(":")[1]);
                         }
                         else {
-                            System.out.println("Hubo un error al realizar la consulta: " + line);
+                            //System.out.println("Hubo un error al realizar la consulta: " + line);
                         }
                         writer.println("CPU");
                         estado=6;
